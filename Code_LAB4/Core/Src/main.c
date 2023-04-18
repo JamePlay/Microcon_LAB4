@@ -62,6 +62,8 @@ float pos = 0;
 float set_pos = 0;
 float Vfeedback = 0;
 float Ess = 0;
+//Protect
+float Before_QEIReadRaw = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -132,31 +134,37 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  QEIReadRaw = __HAL_TIM_GET_COUNTER(&htim2); // READ LSB
+	  //Protect
+	  if(Before_QEIReadRaw - QEIReadRaw <= -200000) QEIReadRaw = 0;
+	  if(Before_QEIReadRaw - QEIReadRaw >= 200000) QEIReadRaw = 307199;
+
 	  QEIReadRaw_ARound = QEIReadRaw % 3072; // READ LSB of 1 Round
 	  Angle = QEIReadRaw * (36000.0/307200.0); // READ Angle
 	  Angle_ARound = QEIReadRaw_ARound * (360.0/3072.0); // READ Angle of 1 Round
+
 
 	 static uint32_t timestamp = 0;
 	  	  if(timestamp < HAL_GetTick()){
 	  		timestamp = HAL_GetTick() + 10;// 100 HZ
 	  		pos = Angle;
-	  		Ess = set_pos - pos;
-	  		Vfeedback = arm_pid_f32(&PID, Ess);
-	  		if(Vfeedback > 0){
+	  		Ess = set_pos - pos; //Tracking Error
+	  		Vfeedback = arm_pid_f32(&PID, Ess); //Calculate U(s)
+	  		if(Vfeedback > 0){ //Want CW
 	  			dutyCCW = 0;
-	  			dutyCW = Vfeedback*(1000/5);
-	  			if(dutyCW >= 1000) dutyCW = 1000;
-	  			else if(dutyCW <= 0) dutyCW = 100;
+	  			dutyCW = Vfeedback*(1000/5); //Find % of Voltage
+	  			if(dutyCW >= 1000) dutyCW = 1000; //MAX duty
+	  			else if(dutyCW <= 0) dutyCW = 100; //MIN duty
 	  		}
-	  		else if(Vfeedback < 0){
+	  		else if(Vfeedback < 0){ //Want CCW
 	  			dutyCW = 0;
-				dutyCCW = -1*Vfeedback*(1000/5);
-				if(dutyCCW >= 1000) dutyCCW = 1000;
-				else if(dutyCCW <= 0) dutyCCW = 100;
+				dutyCCW = -1*Vfeedback*(1000/5); // -1 to protect -duty
+				if(dutyCCW >= 1000) dutyCCW = 1000; //MAX duty
+				else if(dutyCCW <= 0) dutyCCW = 100; //MIN duty
 	  		}
 	  	  }
 	  	__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,dutyCW); //Set duty CW
 	  	__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,dutyCCW); //Set duty CCW
+	  	Before_QEIReadRaw = QEIReadRaw;
   }
   /* USER CODE END 3 */
 }

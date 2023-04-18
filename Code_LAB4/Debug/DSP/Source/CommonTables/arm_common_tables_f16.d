@@ -1,0 +1,10 @@
+DSP/Source/CommonTables/arm_common_tables_f16.o: \
+ ../DSP/Source/CommonTables/arm_common_tables_f16.c \
+ C:/Users/User/Desktop/BABY\ FILE/git/Microcon_LAB4/Code_LAB4/DSP/Include/arm_math_types_f16.h \
+ C:/Users/User/Desktop/BABY\ FILE/git/Microcon_LAB4/Code_LAB4/DSP/Include/arm_math_types.h \
+ ../Drivers/CMSIS/Include/cmsis_compiler.h \
+ ../Drivers/CMSIS/Include/cmsis_gcc.h
+C:/Users/User/Desktop/BABY\ FILE/git/Microcon_LAB4/Code_LAB4/DSP/Include/arm_math_types_f16.h:
+C:/Users/User/Desktop/BABY\ FILE/git/Microcon_LAB4/Code_LAB4/DSP/Include/arm_math_types.h:
+../Drivers/CMSIS/Include/cmsis_compiler.h:
+../Drivers/CMSIS/Include/cmsis_gcc.h:

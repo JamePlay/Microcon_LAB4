@@ -53,8 +53,8 @@ float Angle;
 float Angle_ARound;
 
 //PWM
-int16_t dutyCCW = 0;
-int16_t dutyCW = 0;
+int64_t dutyCCW = 0;
+int64_t dutyCW = 0;
 
 //PID
 arm_pid_instance_f32 PID = {0}; //struct PID and set all to 0
@@ -120,7 +120,7 @@ int main(void)
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
   //PID
-  PID.Kp = 0.1; //set P
+  PID.Kp = 0.12; //set P
   PID.Ki = 0; //set I
   PID.Kd = 0;//set D
   arm_pid_init_f32(&PID, 0);//Update value to PID calculation
